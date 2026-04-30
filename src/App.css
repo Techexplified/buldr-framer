@@ -20,7 +20,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border: 1.5px solid var(--accent-blue); /* The blue glow from your wireframe */
+  border: 1.5px solid var(--accent-blue);
   min-height: 100vh;
 }
 
@@ -93,10 +93,16 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   padding: 10px;
-  border-radius: 20px; /* pill shape like wireframe */
+  border-radius: 20px;
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.item-icon {
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
 }
 
 .item-details {
@@ -127,6 +133,13 @@ body {
   padding: 8px 4px;
   border-radius: 4px;
   cursor: pointer;
+  color: var(--text-dim);
+}
+
+.action-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-main);
 }
 
 .action-label {
@@ -164,5 +177,29 @@ body {
   border: none;
   color: var(--text-dim);
   cursor: pointer;
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
 }

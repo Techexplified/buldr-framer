@@ -1,8 +1,19 @@
 import { framer, CanvasNode, useIsAllowedTo } from "framer-plugin";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import {
+  Sparkles,
+  Download,
+  ClipboardPaste,
+  Wand2,
+  Copy,
+  Search,
+  Plus,
+  Gem,
+  MessageSquare,
+  AlignJustify,
+} from "lucide-react";
 import "./App.css";
 
-// Adjusted dimensions to fit the full wireframe height
 framer.showUI({
   position: "top right",
   width: 280,
@@ -17,9 +28,24 @@ function useSelection() {
   return selection;
 }
 
+const suggestionPrompts: Record<string, string> = {
+  "Word Flux":
+    "Create an animated text component with smooth word-cycling transitions, bold typography, and a glowing accent color.",
+  "Flow Tracker":
+    "Create a kanban-style flow tracker with drag-and-drop columns, status badges, and a minimal dark card layout.",
+  "Time Pulse":
+    "Create a countdown timer component with a circular progress ring, large digit display, and pulsing animation when time is low.",
+  "Depth Tilt":
+    "Create a 3D tilt card component that responds to mouse movement with a parallax depth effect and subtle shadow.",
+  "Echo Wave":
+    "Create an animated audio waveform visualizer component with bar graph style bars that pulse rhythmically.",
+};
+
 export function App() {
   const selection = useSelection();
   const isAllowed = useIsAllowedTo("addSVG");
+  const [prompt, setPrompt] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleAddSvg = async (name: string) => {
     await framer.addSVG({
@@ -28,19 +54,35 @@ export function App() {
     });
   };
 
+  const handleSuggestionClick = (item: string) => {
+    const text = suggestionPrompts[item] ?? `Create a ${item} UI component.`;
+    setPrompt(text);
+    setTimeout(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(text.length, text.length);
+    }, 0);
+  };
+
+  const recentItems = [
+    {
+      name: "Pricing Card",
+      time: "Edited 1 hour ago",
+      icon: <Gem size={16} />,
+    },
+    {
+      name: "Testimonial Slider",
+      time: "Edited 6 hours ago",
+      icon: <MessageSquare size={16} />,
+    },
+    {
+      name: "Navbar",
+      time: "Edited yesterday",
+      icon: <AlignJustify size={16} />,
+    },
+  ];
+
   return (
     <main className="container">
-      {/* Header */}
-      <header className="header">
-        <div className="logo-row">
-          <div className="logo-icon">✨</div>
-          <h1 className="title">Buildr</h1>
-        </div>
-        <p className="subtitle">Design smarter, ship faster</p>
-      </header>
-
-      <hr className="divider" />
-
       {/* Suggestions Grid */}
       <section className="section">
         <h2 className="section-title">Suggestions</h2>
@@ -55,7 +97,7 @@ export function App() {
             <button
               key={item}
               className="btn-suggestion"
-              onClick={() => handleAddSvg(item)}
+              onClick={() => handleSuggestionClick(item)}
             >
               {item}
             </button>
@@ -74,15 +116,7 @@ export function App() {
           </a>
         </div>
         <div className="recent-list">
-          {[
-            { name: "Pricing Card", time: "Edited 1 hour ago", icon: "💎" },
-            {
-              name: "Testimonial Slider",
-              time: "Edited 6 hours ago",
-              icon: "💬",
-            },
-            { name: "Navbar", time: "Edited yesterday", icon: "☰" },
-          ].map((item) => (
+          {recentItems.map((item) => (
             <div key={item.name} className="recent-item">
               <div className="item-icon">{item.icon}</div>
               <div className="item-details">
@@ -98,26 +132,42 @@ export function App() {
       <section className="section">
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-          <ActionButton icon="📥" label="Import" />
-          <ActionButton icon="📋" label="Paste UI" />
-          <ActionButton icon="🪄" label="AI improve" />
-          <ActionButton icon="👯" label="Duplicate" />
+          <ActionButton icon={<Download size={16} />} label="Import" />
+          <ActionButton icon={<ClipboardPaste size={16} />} label="Paste UI" />
+          <ActionButton icon={<Wand2 size={16} />} label="AI improve" />
+          <ActionButton icon={<Copy size={16} />} label="Duplicate" />
         </div>
       </section>
 
       {/* Make a Component Input */}
       <div className="component-input-container">
-        <textarea placeholder="Make a Component..." className="comp-input" />
+        <textarea
+          ref={textareaRef}
+          placeholder="Make a Component..."
+          className="comp-input"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
         <div className="input-footer">
-          <button className="icon-btn">+</button>
-          <button className="icon-btn">🔍</button>
+          <button className="icon-btn">
+            <Plus size={16} />
+          </button>
+          <button className="icon-btn">
+            <Search size={16} />
+          </button>
         </div>
       </div>
     </main>
   );
 }
 
-function ActionButton({ icon, label }: { icon: string; label: string }) {
+function ActionButton({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) {
   return (
     <button className="action-btn">
       <span className="action-icon">{icon}</span>
