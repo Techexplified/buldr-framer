@@ -1,10 +1,168 @@
-/* Your Plugin CSS */
+:root {
+  --bg-color: #050a12;
+  --card-bg: #0f172a;
+  --border-color: #1e293b;
+  --accent-blue: #00a3ff;
+  --text-main: #ffffff;
+  --text-dim: #94a3b8;
+}
 
-main {
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+}
+
+.container {
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  padding: 0 15px 15px 15px;
-  height: 100%;
-  gap: 15px;
+  gap: 12px;
+  border: 1.5px solid var(--accent-blue); /* The blue glow from your wireframe */
+  min-height: 100vh;
+}
+
+.header .logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 4px 0 0 0;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 8px 0;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}
+
+.grid-suggestions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-suggestion {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-all {
+  font-size: 11px;
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recent-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 20px; /* pill shape like wireframe */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+}
+.item-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.item-time {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-label {
+  font-size: 9px;
+  margin-top: 4px;
+  color: var(--text-dim);
+}
+
+.component-input-container {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: auto;
+}
+
+.comp-input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  resize: none;
+  font-size: 13px;
+  outline: none;
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
 }
