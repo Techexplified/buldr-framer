@@ -1,7 +1,6 @@
 import { framer, CanvasNode, useIsAllowedTo } from "framer-plugin";
 import { useState, useEffect, useRef } from "react";
 import {
-  Sparkles,
   Download,
   ClipboardPaste,
   Wand2,
@@ -67,23 +66,23 @@ export function App() {
     {
       name: "Pricing Card",
       time: "Edited 1 hour ago",
-      icon: <Gem size={16} />,
+      icon: <Gem size={15} />,
     },
     {
       name: "Testimonial Slider",
       time: "Edited 6 hours ago",
-      icon: <MessageSquare size={16} />,
+      icon: <MessageSquare size={15} />,
     },
     {
       name: "Navbar",
       time: "Edited yesterday",
-      icon: <AlignJustify size={16} />,
+      icon: <AlignJustify size={15} />,
     },
   ];
 
   return (
     <main className="container">
-      {/* Suggestions Grid */}
+      {/* Suggestions */}
       <section className="section">
         <h2 className="section-title">Suggestions</h2>
         <div className="grid-suggestions">
@@ -107,12 +106,12 @@ export function App() {
 
       <hr className="divider" />
 
-      {/* Recent Items */}
+      {/* Recent */}
       <section className="section">
         <div className="section-header">
           <h2 className="section-title">Recent</h2>
           <a href="#" className="view-all">
-            View all
+            View all →
           </a>
         </div>
         <div className="recent-list">
@@ -128,18 +127,20 @@ export function App() {
         </div>
       </section>
 
+      <hr className="divider" />
+
       {/* Quick Actions */}
       <section className="section">
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-          <ActionButton icon={<Download size={16} />} label="Import" />
-          <ActionButton icon={<ClipboardPaste size={16} />} label="Paste UI" />
-          <ActionButton icon={<Wand2 size={16} />} label="AI improve" />
-          <ActionButton icon={<Copy size={16} />} label="Duplicate" />
+          <ActionButton icon={<Download size={15} />} label="Import" />
+          <ActionButton icon={<ClipboardPaste size={15} />} label="Paste UI" />
+          <ActionButton icon={<Wand2 size={15} />} label="AI Improve" />
+          <ActionButton icon={<Copy size={15} />} label="Duplicate" />
         </div>
       </section>
 
-      {/* Make a Component Input */}
+      {/* Component Input */}
       <div className="component-input-container">
         <textarea
           ref={textareaRef}
@@ -150,10 +151,10 @@ export function App() {
         />
         <div className="input-footer">
           <button className="icon-btn">
-            <Plus size={16} />
+            <Plus size={14} />
           </button>
           <button className="icon-btn">
-            <Search size={16} />
+            <Search size={14} />
           </button>
         </div>
       </div>
