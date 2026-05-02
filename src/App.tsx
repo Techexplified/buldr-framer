@@ -16,7 +16,7 @@ import "./App.css";
 
 framer.showUI({
   position: "top right",
-  width: 280,
+  width: 380,
   height: 540,
 });
 

@@ -125,35 +125,43 @@ body {
 }
 
 .action-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03); /* subtle fill */
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  height: 50px;
   align-items: center;
-  padding: 8px 4px;
-  border-radius: 4px;
+  padding: 10px 4px;
+  border-radius: 6px;
   cursor: pointer;
-  color: var(--text-dim);
+  transition: all 0.2s ease;
 }
 
 .action-icon {
   display: flex;
   align-items: center;
-  color: var(--text-main);
+  color: var(--text-main); /* brighter icon */
+}
+.action-btn:hover {
+  background: rgba(0, 163, 255, 0.08);
+  border-color: var(--accent-blue);
 }
 
 .action-label {
   font-size: 9px;
   margin-top: 4px;
   color: var(--text-dim);
+  opacity: 0.9;
 }
 
 .component-input-container {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px;
+  height: 150px;
+  padding: 10px;
   margin-top: auto;
+  position: relative;
 }
 
 .comp-input {
@@ -164,21 +172,29 @@ body {
   resize: none;
   font-size: 13px;
   outline: none;
+  min-height: 100px; /* 🔥 gives proper typing space */
+  padding-right: 40px; /* space for right icon */
 }
 
 .input-footer {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
   display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
+  gap: 6px;
 }
 
 .icon-btn {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
   color: var(--text-dim);
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
 }
 
 /* ── Scrollbar ── */
