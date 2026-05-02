@@ -10,6 +10,7 @@ import {
   Gem,
   MessageSquare,
   AlignJustify,
+  ArrowUpRight,
 } from "lucide-react";
 import "./App.css";
 
@@ -40,18 +41,19 @@ const suggestionPrompts: Record<string, string> = {
     "Create an animated audio waveform visualizer component with bar graph style bars that pulse rhythmically.",
 };
 
+const SUGGESTIONS = [
+  "Word Flux",
+  "Flow Tracker",
+  "Time Pulse",
+  "Depth Tilt",
+  "Echo Wave",
+];
+
 export function App() {
   const selection = useSelection();
   const isAllowed = useIsAllowedTo("addSVG");
   const [prompt, setPrompt] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const handleAddSvg = async (name: string) => {
-    await framer.addSVG({
-      svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`,
-      name: `${name}.svg`,
-    });
-  };
 
   const handleSuggestionClick = (item: string) => {
     const text = suggestionPrompts[item] ?? `Create a ${item} UI component.`;
@@ -66,18 +68,25 @@ export function App() {
     {
       name: "Pricing Card",
       time: "Edited 1 hour ago",
-      icon: <Gem size={15} />,
+      icon: <Gem size={14} />,
     },
     {
       name: "Testimonial Slider",
       time: "Edited 6 hours ago",
-      icon: <MessageSquare size={15} />,
+      icon: <MessageSquare size={14} />,
     },
     {
       name: "Navbar",
       time: "Edited yesterday",
-      icon: <AlignJustify size={15} />,
+      icon: <AlignJustify size={14} />,
     },
+  ];
+
+  const quickActions = [
+    { icon: <Download size={14} />, label: "Import" },
+    { icon: <ClipboardPaste size={14} />, label: "Paste UI" },
+    { icon: <Wand2 size={14} />, label: "AI Improve" },
+    { icon: <Copy size={14} />, label: "Duplicate" },
   ];
 
   return (
@@ -86,13 +95,7 @@ export function App() {
       <section className="section">
         <h2 className="section-title">Suggestions</h2>
         <div className="grid-suggestions">
-          {[
-            "Word Flux",
-            "Flow Tracker",
-            "Time Pulse",
-            "Depth Tilt",
-            "Echo Wave",
-          ].map((item) => (
+          {SUGGESTIONS.map((item) => (
             <button
               key={item}
               className="btn-suggestion"
@@ -111,7 +114,11 @@ export function App() {
         <div className="section-header">
           <h2 className="section-title">Recent</h2>
           <a href="#" className="view-all">
-            View all →
+            View all{" "}
+            <ArrowUpRight
+              size={9}
+              style={{ display: "inline", verticalAlign: "middle" }}
+            />
           </a>
         </div>
         <div className="recent-list">
@@ -133,10 +140,9 @@ export function App() {
       <section className="section">
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-          <ActionButton icon={<Download size={15} />} label="Import" />
-          <ActionButton icon={<ClipboardPaste size={15} />} label="Paste UI" />
-          <ActionButton icon={<Wand2 size={15} />} label="AI Improve" />
-          <ActionButton icon={<Copy size={15} />} label="Duplicate" />
+          {quickActions.map(({ icon, label }) => (
+            <ActionButton key={label} icon={icon} label={label} />
+          ))}
         </div>
       </section>
 
@@ -144,17 +150,17 @@ export function App() {
       <div className="component-input-container">
         <textarea
           ref={textareaRef}
-          placeholder="Make a Component..."
+          placeholder="Describe a component…"
           className="comp-input"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
         <div className="input-footer">
-          <button className="icon-btn">
-            <Plus size={14} />
+          <button className="icon-btn" aria-label="Attach">
+            <Plus size={13} />
           </button>
-          <button className="icon-btn">
-            <Search size={14} />
+          <button className="icon-btn" aria-label="Search">
+            <Search size={13} />
           </button>
         </div>
       </div>
