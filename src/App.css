@@ -7,6 +7,7 @@
   --surface-hover: #1e1e25;
   --border: #27272f;
   --border-active: #444450;
+  --accent: #06b6d4; /* Added for consistency with your focus logic */
   --text-1: #f0f0f5;
   --text-2: #555560;
   --text-3: #88889a;
@@ -33,7 +34,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Container ── */
 .container {
   position: relative;
   z-index: 1;
@@ -44,7 +44,6 @@ body {
   min-height: 100vh;
 }
 
-/* ── Divider ── */
 .divider {
   border: none;
   height: 1px;
@@ -52,13 +51,14 @@ body {
   margin: 0;
 }
 
-/* ── Section ── */
+/* ── Section & Animation ── */
 .section {
   display: flex;
   flex-direction: column;
   gap: 10px;
   animation: rise 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
 }
+
 .section:nth-child(1) {
   animation-delay: 0.05s;
 }
@@ -91,35 +91,30 @@ body {
   align-items: center;
   gap: 8px;
 }
+
 .section-title::before {
   content: "";
-  display: inline-block;
   width: 14px;
   height: 1px;
   background: var(--text-3);
   opacity: 0.6;
-  flex-shrink: 0;
 }
 
-/* ── Section header ── */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.section-header .section-title {
-  margin-bottom: 0;
-}
 
 .view-all {
   font-family: var(--font-mono);
   font-size: 9px;
-  letter-spacing: 0.08em;
   color: var(--text-3);
   text-decoration: none;
   opacity: 0.7;
   transition: opacity 0.15s;
 }
+
 .view-all:hover {
   opacity: 1;
 }
@@ -131,78 +126,23 @@ body {
   gap: 7px;
 }
 
-/* Each suggestion chip gets a unique accent */
-.btn-suggestion:nth-child(1) {
-  --s-accent: #e879f9;
-} /* fuchsia */
-.btn-suggestion:nth-child(2) {
-  --s-accent: #fb923c;
-} /* orange  */
-.btn-suggestion:nth-child(3) {
-  --s-accent: #34d399;
-} /* emerald */
-.btn-suggestion:nth-child(4) {
-  --s-accent: #60a5fa;
-} /* blue    */
-.btn-suggestion:nth-child(5) {
-  --s-accent: #fbbf24;
-} /* amber   */
-
 .btn-suggestion {
-  background: var(--surface-1);
-  border: 1px solid color-mix(in srgb, var(--s-accent) 22%, var(--border));
+  background: #1e2939;
+  border: 1px solid var(--border);
   color: var(--text-1);
-  padding: 10px 13px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
-  position: relative;
-  overflow: hidden;
-  letter-spacing: 0.01em;
-}
-
-/* Subtle left bar accent */
-.btn-suggestion::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 15%;
-  bottom: 15%;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--s-accent);
-  opacity: 0.7;
-}
-
-/* Radial glow on hover */
-.btn-suggestion::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 10% 50%,
-    color-mix(in srgb, var(--s-accent) 12%, transparent) 0%,
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.2s;
 }
 
 .btn-suggestion:hover {
-  border-color: color-mix(in srgb, var(--s-accent) 50%, transparent);
   background: var(--surface-2);
+  border-color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 18px color-mix(in srgb, var(--s-accent) 14%, transparent);
-}
-.btn-suggestion:hover::after {
-  opacity: 1;
-}
-.btn-suggestion:hover::before {
-  opacity: 1;
 }
 
 /* ── Recent list ── */
@@ -212,18 +152,8 @@ body {
   gap: 5px;
 }
 
-/* Per-item accent colors for recent items */
-.recent-item:nth-child(1) {
-  --r-accent: #a78bfa;
-} /* violet */
-.recent-item:nth-child(2) {
-  --r-accent: #2dd4bf;
-} /* teal   */
-.recent-item:nth-child(3) {
-  --r-accent: #f87171;
-} /* rose   */
-
 .recent-item {
+  --r-accent: #06b6d4; /* Consistently apply the same accent color */
   background: var(--surface-1);
   border: 1px solid var(--border);
   padding: 11px 14px;
@@ -244,7 +174,6 @@ body {
   top: 10%;
   bottom: 10%;
   width: 2px;
-  border-radius: 2px;
   background: var(--r-accent);
   opacity: 0;
   transition: opacity 0.2s;
@@ -256,18 +185,16 @@ body {
   transform: translateX(3px);
   box-shadow: 0 2px 14px color-mix(in srgb, var(--r-accent) 10%, transparent);
 }
+
 .recent-item:hover::before {
   opacity: 1;
 }
 
 .item-icon {
-  color: var(--r-accent);
+  color: var(--accent);
   display: flex;
-  align-items: center;
-  opacity: 0.85;
-  flex-shrink: 0;
   filter: drop-shadow(
-    0 0 4px color-mix(in srgb, var(--r-accent) 50%, transparent)
+    0 0 4px color-mix(in srgb, var(--accent) 50%, transparent)
   );
 }
 
@@ -276,19 +203,15 @@ body {
   flex-direction: column;
   gap: 2px;
 }
-
 .item-name {
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-1);
   letter-spacing: 0.01em;
 }
-
 .item-time {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--text-2);
-  letter-spacing: 0.04em;
 }
 
 /* ── Quick actions ── */
@@ -298,20 +221,8 @@ body {
   gap: 7px;
 }
 
-.action-btn:nth-child(1) {
-  --btn-accent: #8b5cf6;
-}
-.action-btn:nth-child(2) {
-  --btn-accent: #06b6d4;
-}
-.action-btn:nth-child(3) {
-  --btn-accent: #f59e0b;
-}
-.action-btn:nth-child(4) {
-  --btn-accent: #f472b6;
-}
-
 .action-btn {
+  --btn-accent: #06b6d4;
   background: var(--surface-1);
   border: 1px solid color-mix(in srgb, var(--btn-accent) 28%, var(--border));
   display: flex;
@@ -326,7 +237,6 @@ body {
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--btn-accent) 7%, transparent);
 }
 
 .action-btn::before {
@@ -338,7 +248,6 @@ body {
     color-mix(in srgb, var(--btn-accent) 13%, transparent) 0%,
     transparent 70%
   );
-  transition: opacity 0.2s;
 }
 
 .action-btn:hover {
@@ -352,23 +261,22 @@ body {
 
 .action-icon {
   display: flex;
-  align-items: center;
   color: var(--btn-accent);
   filter: drop-shadow(
     0 0 4px color-mix(in srgb, var(--btn-accent) 55%, transparent)
   );
   transition: filter 0.2s;
 }
+
 .action-btn:hover .action-icon {
   filter: drop-shadow(0 0 8px var(--btn-accent));
 }
-
 .action-label {
   font-family: var(--font-mono);
   font-size: 7.5px;
   letter-spacing: 0.12em;
-  color: color-mix(in srgb, var(--btn-accent) 65%, var(--text-2));
   text-transform: uppercase;
+  color: color-mix(in srgb, var(--btn-accent) 65%, var(--text-2));
 }
 
 /* ── Component input ── */
@@ -376,20 +284,18 @@ body {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  height: 150px;
-  padding: 13px 13px 9px;
+  padding: 16px;
   margin-top: auto;
-  position: relative;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
-  overflow: hidden;
-  animation: rise 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both;
+  display: flex;
+  flex-direction: column;
 }
 
 .component-input-container:focus-within {
-  border-color: var(--border-active);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .comp-input {
@@ -399,45 +305,44 @@ body {
   width: 100%;
   resize: none;
   font-family: var(--font-display);
-  font-size: 12.5px;
-  font-weight: 400;
-  outline: none;
-  min-height: 96px;
-  padding-right: 44px;
-  line-height: 1.65;
-  letter-spacing: 0.01em;
-}
-.comp-input::placeholder {
-  color: var(--text-2);
-  font-style: italic;
-  font-weight: 400;
+  font-size: 15px;
+  min-height: 100px;
+  line-height: 1.5;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .input-footer {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
   display: flex;
-  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
 }
 
-.icon-btn {
-  background: var(--surface-2);
+.icon-btn-secondary,
+.icon-btn-primary {
   border: 1px solid var(--border);
-  color: var(--text-2);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
 }
-.icon-btn:hover {
+
+.icon-btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.icon-btn-primary {
   background: var(--surface-hover);
-  border-color: var(--border-active);
-  color: var(--text-1);
+  color: var(--text-2);
+  transition: 0.2s;
+}
+.icon-btn-primary:hover {
+  background: var(--text-1);
+  color: var(--bg);
 }
 
 /* ── Scrollbar ── */
@@ -454,6 +359,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.08) transparent;

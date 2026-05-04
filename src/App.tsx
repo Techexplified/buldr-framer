@@ -11,6 +11,7 @@ import {
   MessageSquare,
   AlignJustify,
   ArrowUpRight,
+  ArrowUp,
 } from "lucide-react";
 import "./App.css";
 
@@ -147,6 +148,7 @@ export function App() {
       </section>
 
       {/* Component Input */}
+      {/* Input container now handles the border and focus */}
       <div className="component-input-container">
         <textarea
           ref={textareaRef}
@@ -156,11 +158,11 @@ export function App() {
           onChange={(e) => setPrompt(e.target.value)}
         />
         <div className="input-footer">
-          <button className="icon-btn" aria-label="Attach">
-            <Plus size={13} />
+          <button className="icon-btn-secondary" aria-label="Add">
+            <Plus size={18} />
           </button>
-          <button className="icon-btn" aria-label="Search">
-            <Search size={13} />
+          <button className="icon-btn-primary" aria-label="Submit">
+            <ArrowUp size={18} />
           </button>
         </div>
       </div>
