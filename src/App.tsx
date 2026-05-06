@@ -93,31 +93,54 @@ Generate production-ready Framer React TSX components.
 
 STRICT RULES:
 
-1. Output ONLY raw TSX code.
-2. No markdown.
-3. No backticks.
-4. No explanations.
-5. Must export default function.
-6. The component MUST return valid JSX.
-7. No external CSS files.
-8. Use inline styles or <style>.
-9. No external npm packages.
-10. Use only React hooks.
-11. Component must be visually polished.
-12. Component must work immediately inside Framer.
-13. Default size should look good around 500x300.
-14. Never return partial code.
-15. Never omit imports if required.
+1. Output ONLY raw TSX code. No markdown. No backticks. No explanations.
+2. ALWAYS include these imports at the top:
+   import { addPropertyControls, ControlType } from "framer"
+   import { useState, useEffect, useRef, useCallback, useMemo } from "react"
+3. For animations you MAY import from "framer-motion":
+   import { motion, useAnimation, useInView } from "framer-motion"
+4. NEVER import from "framer/motion" — it does not exist. Only "framer-motion".
+5. NEVER write: import React from "react"
+6. NEVER write: React.useState, React.useEffect — always use named imports.
+7. No external npm packages except "react", "framer", "framer-motion".
+8. No external CSS files. Use only inline styles.
+9. Always add @framer annotations above the export:
+   /**
+    * @framerIntrinsicWidth 500
+    * @framerIntrinsicHeight 300
+    * @framerSupportedLayoutWidth any-prefer-fixed
+    * @framerSupportedLayoutHeight any-prefer-fixed
+    */
+10. Must export default function with a PascalCase name.
+11. Always call addPropertyControls() at the bottom.
+12. Component must fill its container: width "100%" height "100%".
+13. Never return partial code. Always output the complete file.
 
-Example:
+EXAMPLE STRUCTURE:
 
-export default function MyComponent() {
+import { addPropertyControls, ControlType } from "framer"
+import { useState, useEffect } from "react"
+
+/**
+ * @framerIntrinsicWidth 500
+ * @framerIntrinsicHeight 300
+ * @framerSupportedLayoutWidth any-prefer-fixed
+ * @framerSupportedLayoutHeight any-prefer-fixed
+ */
+export default function MyComponent({ color = "#0099ff", label = "Hello" }) {
+  const [active, setActive] = useState(false)
+
   return (
-    <div>
-      Hello
+    <div style={{ width: "100%", height: "100%", background: color, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ color: "#fff", fontSize: 24 }}>{label}</span>
     </div>
   )
 }
+
+addPropertyControls(MyComponent, {
+  color: { type: ControlType.Color, title: "Color", defaultValue: "#0099ff" },
+  label: { type: ControlType.String, title: "Label", defaultValue: "Hello" },
+})
 `;
 
 function extractComponentName(code: string) {
@@ -214,6 +237,7 @@ The component function should be named "${componentName || "CustomComponent"}".`
 function sanitizeComponentCode(code: string) {
   let cleaned = code.trim();
 
+  // Strip markdown fences
   cleaned = cleaned
     .replace(/```tsx/g, "")
     .replace(/```ts/g, "")
@@ -222,7 +246,14 @@ function sanitizeComponentCode(code: string) {
     .replace(/```/g, "")
     .trim();
 
-  cleaned = cleaned.replace(/import React.*?from ['\"]react['\"];?/g, "");
+  // Remove bare React default import (named imports are fine)
+  cleaned = cleaned.replace(/^import React from ['"]react['"];?\n?/gm, "");
+
+  // Fix wrong framer/motion import → framer-motion
+  cleaned = cleaned.replace(
+    /from ['"]framer\/motion['"]/g,
+    'from "framer-motion"',
+  );
 
   return cleaned;
 }
@@ -554,35 +585,38 @@ export function App() {
       const safeName =
         generatedComponent.name
           .replace(/[^a-zA-Z0-9]/g, "")
-          .replace(/^\\d+/, "") || "GeneratedComponent";
+          .replace(/^\d+/, "") || "GeneratedComponent";
 
       const fileName = `${safeName}.tsx`;
-
       const componentCode = sanitizeComponentCode(generatedComponent.code);
 
       const codeFile = await framer.createCodeFile(fileName, componentCode, {
         editViaPlugin: true,
       });
 
-      await codeFile.navigateTo();
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
-      await framer.addComponentInstance({
-        url: codeFile.url,
-        attributes: {
-          width: 520,
-          height: 320,
-        },
-      });
+      try {
+        await framer.addComponentInstance({
+          url: codeFile.url,
+          attributes: { width: 500, height: 300 },
+        });
 
-      framer.notify("Component added to canvas successfully!", {
-        variant: "success",
-      });
+        framer.notify(`${safeName} added to canvas!`, { variant: "success" });
+      } catch (canvasErr) {
+        console.warn("Canvas insert failed:", canvasErr);
+        await codeFile.navigateTo();
+        framer.notify(
+          `${safeName}.tsx created! Drag it from Assets → Code panel.`,
+          { variant: "success" },
+        );
+      }
     } catch (err) {
       console.error(err);
-
-      framer.notify("Failed to create component", {
-        variant: "error",
-      });
+      framer.notify(
+        err instanceof Error ? err.message : "Failed to create component",
+        { variant: "error" },
+      );
     }
   };
 
