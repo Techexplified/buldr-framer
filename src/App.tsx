@@ -29,8 +29,6 @@ framer.showUI({
   height: 580,
 });
 
-// ── Types ──────────────────────────────────────────────────────────────────
-
 type Screen = "main" | "apikey" | "generating" | "result";
 
 interface GeneratedComponent {
@@ -40,13 +38,13 @@ interface GeneratedComponent {
   timestamp: number;
 }
 
-// ── Hooks ──────────────────────────────────────────────────────────────────
-
 function useSelection() {
   const [selection, setSelection] = useState<CanvasNode[]>([]);
+
   useEffect(() => {
     return framer.subscribeToSelection(setSelection);
   }, []);
+
   return selection;
 }
 
@@ -67,8 +65,6 @@ function useApiKey() {
 
   return { apiKey, setApiKey, clearApiKey };
 }
-
-// ── Constants ──────────────────────────────────────────────────────────────
 
 const suggestionPrompts: Record<string, string> = {
   "Word Flux":
@@ -91,31 +87,44 @@ const SUGGESTIONS = [
   "Echo Wave",
 ];
 
-// ── AI Generation ──────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are an expert Framer code component developer.
 
-const SYSTEM_PROMPT = `You are an expert Framer component developer. Generate complete, self-contained React TSX components for Framer.
+Generate production-ready Framer React TSX components.
 
-RULES:
-1. Output ONLY the raw TSX/JSX code. No markdown, no backticks, no explanation.
-2. The component must be a single default export function.
-3. Use only inline styles or a <style> tag inside the component — no external CSS imports.
-4. Do NOT import from "framer-motion" or any external library. Only use React hooks.
-5. The component must be fully self-contained and visually complete.
-6. Include any animations using CSS keyframes in a <style> tag inside the JSX.
-7. Make the component visually stunning with proper colors, typography, and effects.
-8. The component should work at 400x300px minimum size but be responsive.
-9. Export the component as default. Example structure:
+STRICT RULES:
+
+1. Output ONLY raw TSX code.
+2. No markdown.
+3. No backticks.
+4. No explanations.
+5. Must export default function.
+6. The component MUST return valid JSX.
+7. No external CSS files.
+8. Use inline styles or <style>.
+9. No external npm packages.
+10. Use only React hooks.
+11. Component must be visually polished.
+12. Component must work immediately inside Framer.
+13. Default size should look good around 500x300.
+14. Never return partial code.
+15. Never omit imports if required.
+
+Example:
 
 export default function MyComponent() {
   return (
-    <div style={{ ... }}>
-      <style>{/* CSS with @keyframes here */}</style>
-      ...
+    <div>
+      Hello
     </div>
   )
 }
+`;
 
-IMPORTANT: Output ONLY the component code. Nothing else.`;
+function extractComponentName(code: string) {
+  const match = code.match(/export\\s+default\\s+function\\s+([A-Za-z0-9_]+)/);
+
+  return match?.[1] || "GeneratedComponent";
+}
 
 async function generateComponent(
   prompt: string,
@@ -158,9 +167,11 @@ The component function should be named "${componentName || "CustomComponent"}".`
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
+
     const msg =
       (err as { error?: { message?: string } })?.error?.message ||
       `HTTP ${response.status}`;
+
     throw new Error(msg);
   }
 
@@ -172,6 +183,7 @@ The component function should be named "${componentName || "CustomComponent"}".`
 
   while (true) {
     const { done, value } = await reader.read();
+
     if (done) break;
 
     const chunk = decoder.decode(value, { stream: true });
@@ -179,16 +191,19 @@ The component function should be named "${componentName || "CustomComponent"}".`
 
     for (const line of lines) {
       if (!line.startsWith("data: ")) continue;
+
       const data = line.slice(6).trim();
+
       if (data === "[DONE]") continue;
 
       try {
         const parsed = JSON.parse(data);
         const delta = parsed.choices?.[0]?.delta?.content || "";
+
         fullText += delta;
         onProgress(fullText);
       } catch {
-        // skip malformed chunks
+        // ignore malformed chunks
       }
     }
   }
@@ -196,7 +211,21 @@ The component function should be named "${componentName || "CustomComponent"}".`
   return fullText.trim();
 }
 
-// ── API Key Screen ─────────────────────────────────────────────────────────
+function sanitizeComponentCode(code: string) {
+  let cleaned = code.trim();
+
+  cleaned = cleaned
+    .replace(/```tsx/g, "")
+    .replace(/```ts/g, "")
+    .replace(/```jsx/g, "")
+    .replace(/```js/g, "")
+    .replace(/```/g, "")
+    .trim();
+
+  cleaned = cleaned.replace(/import React.*?from ['\"]react['\"];?/g, "");
+
+  return cleaned;
+}
 
 function ApiKeyScreen({
   onBack,
@@ -210,13 +239,14 @@ function ApiKeyScreen({
   onClear: () => void;
 }) {
   const [input, setInput] = useState(currentKey);
-  const [visible, setVisible] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
     if (!input.trim()) return;
+
     onSave(input.trim());
     setSaved(true);
+
     setTimeout(() => {
       setSaved(false);
       onBack();
@@ -233,7 +263,9 @@ function ApiKeyScreen({
         <button className="back-btn" onClick={onBack}>
           <X size={14} />
         </button>
+
         <span className="screen-title">API Key</span>
+
         <div style={{ width: 28 }} />
       </div>
 
@@ -241,7 +273,9 @@ function ApiKeyScreen({
         <div className="apikey-icon-wrap">
           <Key size={24} strokeWidth={1.5} />
         </div>
+
         <h3 className="apikey-heading">OpenRouter API Key</h3>
+
         <p className="apikey-sub">
           Your key is stored locally and never sent anywhere except OpenRouter.
         </p>
@@ -250,6 +284,7 @@ function ApiKeyScreen({
           <div className="current-key-badge">
             <CheckCircle size={11} />
             <span>{maskedKey}</span>
+
             <button className="clear-key-btn" onClick={onClear}>
               <Trash2 size={10} />
             </button>
@@ -258,20 +293,12 @@ function ApiKeyScreen({
 
         <div className="key-input-wrap">
           <input
-            // type={visible ? "text" : "password"}
             className="key-input"
             placeholder="sk-or-v1-..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSave()}
           />
-
-          {/* <button
-            className="visibility-btn"
-            onClick={() => setVisible((v) => !v)}
-          >
-            {visible ? "Hide" : "Show"}
-          </button> */}
         </div>
 
         <button
@@ -301,8 +328,6 @@ function ApiKeyScreen({
   );
 }
 
-// ── Generating Screen ──────────────────────────────────────────────────────
-
 function GeneratingScreen({
   prompt,
   streamText,
@@ -328,21 +353,26 @@ function GeneratingScreen({
         <button className="back-btn" onClick={onCancel}>
           <X size={14} />
         </button>
+
         <span className="screen-title">
           {error ? "Error" : "Generating..."}
         </span>
+
         <div style={{ width: 28 }} />
       </div>
 
       <div className="gen-prompt-pill">
         <Code2 size={11} />
+
         <span>{prompt.length > 60 ? prompt.slice(0, 60) + "…" : prompt}</span>
       </div>
 
       {error ? (
         <div className="gen-error">
           <AlertCircle size={18} />
+
           <p>{error}</p>
+
           <button className="back-btn-inline" onClick={onCancel}>
             Go back
           </button>
@@ -353,6 +383,7 @@ function GeneratingScreen({
             <Loader2 size={13} className="spin" />
             <span>Building with GPT-4o mini</span>
           </div>
+
           <div className="code-stream" ref={codeRef}>
             <pre>{streamText || "Initializing…"}</pre>
           </div>
@@ -361,8 +392,6 @@ function GeneratingScreen({
     </div>
   );
 }
-
-// ── Result Screen ──────────────────────────────────────────────────────────
 
 function ResultScreen({
   component,
@@ -377,7 +406,9 @@ function ResultScreen({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(component.code);
+
     setCopied(true);
+
     setTimeout(() => setCopied(false), 1500);
   };
 
@@ -387,7 +418,9 @@ function ResultScreen({
         <button className="back-btn" onClick={onNew}>
           <X size={14} />
         </button>
+
         <span className="screen-title">{component.name}</span>
+
         <div style={{ width: 28 }} />
       </div>
 
@@ -404,10 +437,12 @@ function ResultScreen({
       <div className="code-preview">
         <div className="code-preview-header">
           <span className="code-preview-lang">TSX</span>
+
           <span className="code-line-count">
             {component.code.split("\n").length} lines
           </span>
         </div>
+
         <div className="code-preview-body">
           <pre>{component.code}</pre>
         </div>
@@ -418,6 +453,7 @@ function ResultScreen({
           {copied ? <CheckCircle size={13} /> : <Copy size={13} />}
           {copied ? "Copied!" : "Copy Code"}
         </button>
+
         <button className="result-btn-primary" onClick={onAddToCanvas}>
           <Plus size={13} />
           Add to Canvas
@@ -431,23 +467,27 @@ function ResultScreen({
   );
 }
 
-// ── Main App ───────────────────────────────────────────────────────────────
-
 export function App() {
   useSelection();
+
   const { apiKey, setApiKey, clearApiKey } = useApiKey();
+
   const [screen, setScreen] = useState<Screen>("main");
   const [prompt, setPrompt] = useState("");
   const [streamText, setStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
+
   const [generatedComponent, setGeneratedComponent] =
     useState<GeneratedComponent | null>(null);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<boolean>(false);
 
   const handleSuggestionClick = (item: string) => {
     const text = suggestionPrompts[item] ?? `Create a ${item} UI component.`;
+
     setPrompt(text);
+
     setTimeout(() => {
       textareaRef.current?.focus();
       textareaRef.current?.setSelectionRange(text.length, text.length);
@@ -463,27 +503,27 @@ export function App() {
     }
 
     abortRef.current = false;
+
     setStreamText("");
     setError(null);
     setScreen("generating");
 
     try {
       const code = await generateComponent(prompt, apiKey, (text) => {
-        if (!abortRef.current) setStreamText(text);
+        if (!abortRef.current) {
+          setStreamText(text);
+        }
       });
 
       if (abortRef.current) return;
 
-      const name =
-        prompt
-          .split(" ")
-          .slice(0, 3)
-          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(" ") || "Component";
+      const cleanedCode = sanitizeComponentCode(code);
+
+      const componentName = extractComponentName(cleanedCode);
 
       const component: GeneratedComponent = {
-        name,
-        code,
+        name: componentName,
+        code: cleanedCode,
         prompt,
         timestamp: Date.now(),
       };
@@ -501,6 +541,7 @@ export function App() {
 
   const handleCancel = () => {
     abortRef.current = true;
+
     setScreen("main");
     setStreamText("");
     setError(null);
@@ -510,24 +551,38 @@ export function App() {
     if (!generatedComponent) return;
 
     try {
-      // Create a blob URL with the component code and open in new tab
-      // so user can copy it into Framer's code editor
-      const blob = new Blob([generatedComponent.code], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
+      const safeName =
+        generatedComponent.name
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .replace(/^\\d+/, "") || "GeneratedComponent";
 
-      // Also copy to clipboard for convenience
-      await navigator.clipboard.writeText(generatedComponent.code);
+      const fileName = `${safeName}.tsx`;
 
-      framer.notify(
-        "Code copied to clipboard! Paste it in Framer's code editor.",
-        {
-          variant: "success",
+      const componentCode = sanitizeComponentCode(generatedComponent.code);
+
+      const codeFile = await framer.createCodeFile(fileName, componentCode, {
+        editViaPlugin: true,
+      });
+
+      await codeFile.navigateTo();
+
+      await framer.addComponentInstance({
+        url: codeFile.url,
+        attributes: {
+          width: 520,
+          height: 320,
         },
-      );
+      });
 
-      URL.revokeObjectURL(url);
-    } catch {
-      framer.notify("Could not copy to clipboard.", { variant: "error" });
+      framer.notify("Component added to canvas successfully!", {
+        variant: "success",
+      });
+    } catch (err) {
+      console.error(err);
+
+      framer.notify("Failed to create component", {
+        variant: "error",
+      });
     }
   };
 
@@ -555,8 +610,6 @@ export function App() {
     { icon: <Wand2 size={14} />, label: "AI Improve" },
     { icon: <Copy size={14} />, label: "Duplicate" },
   ];
-
-  // ── Render screens ─────────────────────────────────────────────────────
 
   if (screen === "apikey") {
     return (
@@ -598,16 +651,14 @@ export function App() {
     );
   }
 
-  // ── Main screen ────────────────────────────────────────────────────────
-
   return (
     <main className="container">
-      {/* Top bar with API key indicator */}
       <div className="topbar">
         <div className={`api-status ${apiKey ? "connected" : "disconnected"}`}>
           <span className="api-dot" />
           <span>{apiKey ? "API Connected" : "No API Key"}</span>
         </div>
+
         <button
           className="settings-btn"
           onClick={() => setScreen("apikey")}
@@ -617,9 +668,9 @@ export function App() {
         </button>
       </div>
 
-      {/* Suggestions */}
       <section className="section">
         <h2 className="section-title">Suggestions</h2>
+
         <div className="grid-suggestions">
           {SUGGESTIONS.map((item) => (
             <button
@@ -635,22 +686,24 @@ export function App() {
 
       <hr className="divider" />
 
-      {/* Recent */}
       <section className="section">
         <div className="section-header">
           <h2 className="section-title">Recent</h2>
+
           <a href="#" className="view-all">
-            View all{" "}
+            View all
             <ArrowUpRight
               size={9}
               style={{ display: "inline", verticalAlign: "middle" }}
             />
           </a>
         </div>
+
         <div className="recent-list">
           {recentItems.map((item) => (
             <div key={item.name} className="recent-item">
               <div className="item-icon">{item.icon}</div>
+
               <div className="item-details">
                 <span className="item-name">{item.name}</span>
                 <span className="item-time">{item.time}</span>
@@ -662,9 +715,9 @@ export function App() {
 
       <hr className="divider" />
 
-      {/* Quick Actions */}
       <section className="section">
         <h2 className="section-title">Quick Actions</h2>
+
         <div className="quick-actions">
           {quickActions.map(({ icon, label }) => (
             <ActionButton key={label} icon={icon} label={label} />
@@ -672,7 +725,6 @@ export function App() {
         </div>
       </section>
 
-      {/* Component Input */}
       <div className="component-input-container">
         <textarea
           ref={textareaRef}
@@ -687,10 +739,12 @@ export function App() {
             }
           }}
         />
+
         <div className="input-footer">
           <button className="icon-btn-secondary" aria-label="Add">
             <Plus size={18} />
           </button>
+
           <div className="input-footer-right">
             {!apiKey && (
               <button
@@ -700,6 +754,7 @@ export function App() {
                 <Key size={11} /> Add key
               </button>
             )}
+
             <button
               className={`icon-btn-primary ${!prompt.trim() ? "disabled" : ""}`}
               aria-label="Generate"
