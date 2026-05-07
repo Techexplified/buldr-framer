@@ -1,6 +1,6 @@
 {
   "id": "b3590f",
   "name": "Buildr",
-  "modes": ["canvas", "codeFiles"],
+  "modes": ["canvas"],
   "icon": "/icon.svg"
 }

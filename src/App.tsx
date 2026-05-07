@@ -487,9 +487,21 @@ function ResultScreen({
 
         <button className="result-btn-primary" onClick={onAddToCanvas}>
           <Plus size={13} />
-          Add to Canvas
+          Create & Open File
         </button>
       </div>
+
+      <p
+        style={{
+          fontSize: 11,
+          color: "var(--framer-color-text-tertiary)",
+          textAlign: "center",
+          margin: "8px 0 0 0",
+          lineHeight: 1.5,
+        }}
+      >
+        Then drag it from <strong>Assets → Code</strong> onto your canvas.
+      </p>
 
       <button className="new-component-btn" onClick={onNew}>
         Generate another <ChevronRight size={12} />
@@ -578,6 +590,48 @@ export function App() {
     setError(null);
   };
 
+  // const handleAddToCanvas = async () => {
+  //   if (!generatedComponent) return;
+
+  //   try {
+  //     const safeName =
+  //       generatedComponent.name
+  //         .replace(/[^a-zA-Z0-9]/g, "")
+  //         .replace(/^\d+/, "") || "GeneratedComponent";
+
+  //     const fileName = `${safeName}.tsx`;
+  //     const componentCode = sanitizeComponentCode(generatedComponent.code);
+
+  //     const codeFile = await framer.createCodeFile(fileName, componentCode, {
+  //       editViaPlugin: true,
+  //     });
+
+  //     await new Promise((resolve) => setTimeout(resolve, 800));
+
+  //     try {
+  //       await framer.addComponentInstance({
+  //         url: codeFile.url,
+  //         attributes: { width: 500, height: 300 },
+  //       });
+
+  //       framer.notify(`${safeName} added to canvas!`, { variant: "success" });
+  //     } catch (canvasErr) {
+  //       console.warn("Canvas insert failed:", canvasErr);
+  //       await codeFile.navigateTo();
+  //       framer.notify(
+  //         `${safeName}.tsx created! Drag it from Assets → Code panel.`,
+  //         { variant: "success" },
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     framer.notify(
+  //       err instanceof Error ? err.message : "Failed to create component",
+  //       { variant: "error" },
+  //     );
+  //   }
+  // };
+
   const handleAddToCanvas = async () => {
     if (!generatedComponent) return;
 
@@ -594,23 +648,16 @@ export function App() {
         editViaPlugin: true,
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Wait for Framer to compile and register the code file
+      await new Promise((resolve) => setTimeout(resolve, 1200));
 
-      try {
-        await framer.addComponentInstance({
-          url: codeFile.url,
-          attributes: { width: 500, height: 300 },
-        });
+      // Navigate to the code file view so user sees it compiled
+      await codeFile.navigateTo();
 
-        framer.notify(`${safeName} added to canvas!`, { variant: "success" });
-      } catch (canvasErr) {
-        console.warn("Canvas insert failed:", canvasErr);
-        await codeFile.navigateTo();
-        framer.notify(
-          `${safeName}.tsx created! Drag it from Assets → Code panel.`,
-          { variant: "success" },
-        );
-      }
+      framer.notify(
+        `✅ ${safeName} created! Find it in Assets → Code panel and drag to canvas.`,
+        { variant: "success" },
+      );
     } catch (err) {
       console.error(err);
       framer.notify(
