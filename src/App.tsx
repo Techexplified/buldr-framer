@@ -645,6 +645,10 @@ function ResultScreen({
         )}
 
         <p className="instruction-text">
+          Click on <strong>Create & Open File</strong> button.
+        </p>
+
+        <p className="instruction-text">
           Then drag it from <strong>Assets → Code</strong> onto your canvas.
         </p>
 
@@ -660,9 +664,11 @@ function ResultScreen({
           </button>
         </div>
 
-        <button className="new-component-btn" onClick={onNew}>
-          Generate another <ChevronRight size={12} />
-        </button>
+        <div>
+          <button className="new-component-btn" onClick={onNew}>
+            Generate another <ChevronRight size={12} />
+          </button>
+        </div>
 
         <div className="chat-input-wrap">
           <textarea
