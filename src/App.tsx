@@ -590,7 +590,6 @@ function ResultScreen({
       </div>
 
       <div className="result-prompt-box">
-        <p className="result-prompt-label">Prompt</p>
         <p className="result-prompt-text">{component.prompt}</p>
       </div>
 
@@ -607,34 +606,6 @@ function ResultScreen({
           <pre>{component.code}</pre>
         </div>
       </div>
-
-      <div className="result-actions">
-        <button className="result-btn-secondary" onClick={handleCopy}>
-          {copied ? <CheckCircle size={13} /> : <Copy size={13} />}
-          {copied ? "Copied!" : "Copy Code"}
-        </button>
-
-        <button className="result-btn-primary" onClick={onAddToCanvas}>
-          <Plus size={13} />
-          Create & Open File
-        </button>
-      </div>
-
-      <p
-        style={{
-          fontSize: 11,
-          color: "var(--framer-color-text-tertiary)",
-          textAlign: "center",
-          margin: "8px 0 0 0",
-          lineHeight: 1.5,
-        }}
-      >
-        Then drag it from <strong>Assets → Code</strong> onto your canvas.
-      </p>
-
-      <button className="new-component-btn" onClick={onNew}>
-        Generate another <ChevronRight size={12} />
-      </button>
 
       {/* ── Chat refinement section ── */}
       <div className="chat-section">
@@ -672,6 +643,26 @@ function ResultScreen({
             <div ref={chatBottomRef} />
           </div>
         )}
+
+        <p className="instruction-text">
+          Then drag it from <strong>Assets → Code</strong> onto your canvas.
+        </p>
+
+        <div className="result-actions">
+          <button className="result-btn-secondary" onClick={handleCopy}>
+            {copied ? <CheckCircle size={13} /> : <Copy size={13} />}
+            {copied ? "Copied!" : "Copy Code"}
+          </button>
+
+          <button className="result-btn-primary" onClick={onAddToCanvas}>
+            <Plus size={13} />
+            Create & Open File
+          </button>
+        </div>
+
+        <button className="new-component-btn" onClick={onNew}>
+          Generate another <ChevronRight size={12} />
+        </button>
 
         <div className="chat-input-wrap">
           <textarea
@@ -786,48 +777,6 @@ export function App() {
     setStreamText("");
     setError(null);
   };
-
-  // const handleAddToCanvas = async () => {
-  //   if (!generatedComponent) return;
-
-  //   try {
-  //     const safeName =
-  //       generatedComponent.name
-  //         .replace(/[^a-zA-Z0-9]/g, "")
-  //         .replace(/^\d+/, "") || "GeneratedComponent";
-
-  //     const fileName = `${safeName}.tsx`;
-  //     const componentCode = sanitizeComponentCode(generatedComponent.code);
-
-  //     const codeFile = await framer.createCodeFile(fileName, componentCode, {
-  //       editViaPlugin: true,
-  //     });
-
-  //     await new Promise((resolve) => setTimeout(resolve, 800));
-
-  //     try {
-  //       await framer.addComponentInstance({
-  //         url: codeFile.url,
-  //         attributes: { width: 500, height: 300 },
-  //       });
-
-  //       framer.notify(`${safeName} added to canvas!`, { variant: "success" });
-  //     } catch (canvasErr) {
-  //       console.warn("Canvas insert failed:", canvasErr);
-  //       await codeFile.navigateTo();
-  //       framer.notify(
-  //         `${safeName}.tsx created! Drag it from Assets → Code panel.`,
-  //         { variant: "success" },
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     framer.notify(
-  //       err instanceof Error ? err.message : "Failed to create component",
-  //       { variant: "error" },
-  //     );
-  //   }
-  // };
 
   const handleAddToCanvas = async () => {
     if (!generatedComponent) return;

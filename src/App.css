@@ -10,6 +10,7 @@
   --accent: #06b6d4;
   --accent-dim: color-mix(in srgb, #06b6d4 18%, transparent);
   --success: #22c55e;
+  --notify: #c5bd22;
   --error: #ef4444;
   --text-1: #f0f0f5;
   --text-2: #555560;
@@ -789,8 +790,8 @@ body {
 
 .result-prompt-box {
   margin: 0 14px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius: var(--radius-md);
   padding: 12px 14px;
 }
@@ -805,7 +806,7 @@ body {
 
 .result-prompt-text {
   font-size: 12px;
-  color: var(--text-3);
+  color: var(--text-1);
   line-height: 1.5;
 }
 
@@ -858,6 +859,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin: 0 14px;
+  margin-top: 42px;
 }
 
 .result-btn-secondary,
@@ -1062,4 +1064,17 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+/* Instruction Text */
+.instruction-text {
+  color: #999999;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.instruction-text strong {
+  color: #ffffff;
+  font-weight: 600;
 }
