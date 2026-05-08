@@ -424,23 +424,152 @@ function GeneratingScreen({
   );
 }
 
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 function ResultScreen({
   component,
   onNew,
   onAddToCanvas,
+  apiKey,
+  onComponentUpdate,
 }: {
   component: GeneratedComponent;
   onNew: () => void;
   onAddToCanvas: () => void;
+  apiKey: string;
+  onComponentUpdate: (updated: GeneratedComponent) => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [isRefining, setIsRefining] = useState(false);
+  const [refineStream, setRefineStream] = useState("");
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatBottomRef.current) {
+      chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory, refineStream]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(component.code);
-
     setCopied(true);
-
     setTimeout(() => setCopied(false), 1500);
+  };
+
+  const handleRefine = async () => {
+    const trimmed = chatInput.trim();
+    if (!trimmed || isRefining) return;
+
+    const userMsg: ChatMessage = { role: "user", content: trimmed };
+    const newHistory = [...chatHistory, userMsg];
+    setChatHistory(newHistory);
+    setChatInput("");
+    setIsRefining(true);
+    setRefineStream("");
+
+    // Build the messages array for the API:
+    // system + original generation turn + all follow-up turns
+    const initialUserContent = `Create a Framer component with this description: ${component.prompt}`;
+    const messages = [
+      { role: "user", content: initialUserContent },
+      { role: "assistant", content: component.code },
+      ...newHistory.flatMap((m) =>
+        m.role === "user"
+          ? [{ role: "user", content: m.content }]
+          : [{ role: "assistant", content: m.content }],
+      ),
+    ];
+
+    try {
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://framer.com",
+            "X-Title": "Framer Workshop Plugin",
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-4o-mini",
+            messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+            stream: true,
+            temperature: 0.7,
+            max_tokens: 3000,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        const msg =
+          (err as { error?: { message?: string } })?.error?.message ||
+          `HTTP ${response.status}`;
+        throw new Error(msg);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      if (!reader) throw new Error("No response body");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content || "";
+            fullText += delta;
+            setRefineStream(fullText);
+          } catch {
+            // ignore malformed chunks
+          }
+        }
+      }
+
+      const cleanedCode = sanitizeComponentCode(fullText.trim());
+      const assistantMsg: ChatMessage = {
+        role: "assistant",
+        content: cleanedCode,
+      };
+      setChatHistory((prev) => [...prev, assistantMsg]);
+      setRefineStream("");
+
+      const componentName = extractComponentName(cleanedCode);
+      onComponentUpdate({
+        ...component,
+        name: componentName,
+        code: cleanedCode,
+        prompt: component.prompt,
+        timestamp: Date.now(),
+      });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "An error occurred";
+      setChatHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: `⚠️ Error: ${errorMsg}` },
+      ]);
+      setRefineStream("");
+    } finally {
+      setIsRefining(false);
+    }
   };
 
   return (
@@ -506,6 +635,74 @@ function ResultScreen({
       <button className="new-component-btn" onClick={onNew}>
         Generate another <ChevronRight size={12} />
       </button>
+
+      {/* ── Chat refinement section ── */}
+      <div className="chat-section">
+        {chatHistory.length > 0 && (
+          <div className="chat-history">
+            {chatHistory.map((msg, i) => (
+              <div key={i} className={`chat-bubble chat-bubble--${msg.role}`}>
+                {msg.role === "assistant" ? (
+                  msg.content.startsWith("⚠️") ? (
+                    <span className="chat-error-text">{msg.content}</span>
+                  ) : (
+                    <div className="chat-code-updated">
+                      <CheckCircle size={10} />
+                      <span>
+                        Component updated · {msg.content.split("\n").length}{" "}
+                        lines
+                      </span>
+                    </div>
+                  )
+                ) : (
+                  <span>{msg.content}</span>
+                )}
+              </div>
+            ))}
+
+            {isRefining && refineStream && (
+              <div className="chat-bubble chat-bubble--assistant">
+                <div className="chat-streaming">
+                  <Loader2 size={10} className="spin" />
+                  <span>{refineStream.split("\n").length} lines…</span>
+                </div>
+              </div>
+            )}
+
+            <div ref={chatBottomRef} />
+          </div>
+        )}
+
+        <div className="chat-input-wrap">
+          <textarea
+            ref={chatInputRef}
+            className="chat-textarea"
+            placeholder="Ask for changes… (e.g. make it red, add a hover effect)"
+            value={chatInput}
+            rows={2}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                handleRefine();
+              }
+            }}
+            disabled={isRefining}
+          />
+          <button
+            className={`chat-send-btn ${!chatInput.trim() || isRefining ? "chat-send-btn--disabled" : ""}`}
+            onClick={handleRefine}
+            disabled={!chatInput.trim() || isRefining}
+            title="Send (⌘+Enter)"
+          >
+            {isRefining ? (
+              <Loader2 size={14} className="spin" />
+            ) : (
+              <ArrowUp size={14} />
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -728,6 +925,8 @@ export function App() {
           setGeneratedComponent(null);
         }}
         onAddToCanvas={handleAddToCanvas}
+        apiKey={apiKey}
+        onComponentUpdate={(updated) => setGeneratedComponent(updated)}
       />
     );
   }
