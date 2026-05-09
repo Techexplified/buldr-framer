@@ -103,10 +103,10 @@ body {
 
 .settings-btn {
   background: var(--surface-1);
-  border: 1px solid var(--border);
-  color: var(--text-3);
-  width: 26px;
-  height: 26px;
+  border: 1px solid var(--border-active);
+  color: var(--text-1);
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -116,8 +116,8 @@ body {
 }
 
 .settings-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--border);
+  color: var(--text-3);
 }
 
 /* ── Section & Animation ── */
@@ -435,16 +435,19 @@ body {
 }
 
 .icon-btn-primary {
-  background: var(--surface-hover);
-  color: var(--text-2);
+  background: var(--text-1);
+  color: var(--bg);
 }
 
 .icon-btn-primary:hover:not(.disabled) {
   background: var(--text-1);
   color: var(--bg);
+  opacity: 0.3;
 }
 
 .icon-btn-primary.disabled {
+  background: var(--text-1);
+  color: var(--bg);
   opacity: 0.3;
   cursor: not-allowed;
 }
@@ -474,10 +477,10 @@ body {
 
 .back-btn {
   background: var(--surface-1);
-  border: 1px solid var(--border);
-  color: var(--text-3);
-  width: 28px;
-  height: 28px;
+  border: 1px solid var(--border-active);
+  color: var(--text-1);
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -487,8 +490,8 @@ body {
 }
 
 .back-btn:hover {
-  border-color: var(--border-active);
-  color: var(--text-1);
+  border-color: var(--border);
+  color: var(--text-3);
 }
 
 /* ── API Key Screen ── */

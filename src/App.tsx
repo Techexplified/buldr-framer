@@ -1,13 +1,13 @@
 import { framer, CanvasNode } from "framer-plugin";
 import { useState, useEffect, useRef } from "react";
 import {
-  Download,
-  ClipboardPaste,
-  Wand2,
+  // Download,
+  // ClipboardPaste,
+  // Wand2,
   Copy,
-  Gem,
-  MessageSquare,
-  AlignJustify,
+  // Gem,
+  // MessageSquare,
+  // AlignJustify,
   ArrowUpRight,
   ArrowUp,
   Plus,
@@ -292,7 +292,7 @@ function ApiKeyScreen({
     <div className="screen apikey-screen">
       <div className="screen-header">
         <button className="back-btn" onClick={onBack}>
-          <X size={14} />
+          <X size={20} />
         </button>
 
         <span className="screen-title">API Key</span>
@@ -819,30 +819,30 @@ export function App() {
     }
   };
 
-  const recentItems = [
-    {
-      name: "Pricing Card",
-      time: "Edited 1 hour ago",
-      icon: <Gem size={14} />,
-    },
-    {
-      name: "Testimonial Slider",
-      time: "Edited 6 hours ago",
-      icon: <MessageSquare size={14} />,
-    },
-    {
-      name: "Navbar",
-      time: "Edited yesterday",
-      icon: <AlignJustify size={14} />,
-    },
-  ];
+  // const recentItems = [
+  //   {
+  //     name: "Pricing Card",
+  //     time: "Edited 1 hour ago",
+  //     icon: <Gem size={14} />,
+  //   },
+  //   {
+  //     name: "Testimonial Slider",
+  //     time: "Edited 6 hours ago",
+  //     icon: <MessageSquare size={14} />,
+  //   },
+  //   {
+  //     name: "Navbar",
+  //     time: "Edited yesterday",
+  //     icon: <AlignJustify size={14} />,
+  //   },
+  // ];
 
-  const quickActions = [
-    { icon: <Download size={14} />, label: "Import" },
-    { icon: <ClipboardPaste size={14} />, label: "Paste UI" },
-    { icon: <Wand2 size={14} />, label: "AI Improve" },
-    { icon: <Copy size={14} />, label: "Duplicate" },
-  ];
+  // const quickActions = [
+  //   { icon: <Download size={14} />, label: "Import" },
+  //   { icon: <ClipboardPaste size={14} />, label: "Paste UI" },
+  //   { icon: <Wand2 size={14} />, label: "AI Improve" },
+  //   { icon: <Copy size={14} />, label: "Duplicate" },
+  // ];
 
   if (screen === "apikey") {
     return (
@@ -899,7 +899,7 @@ export function App() {
           onClick={() => setScreen("apikey")}
           title="API Key Settings"
         >
-          <Settings size={13} />
+          <Settings size={20} />
         </button>
       </div>
 
@@ -919,9 +919,10 @@ export function App() {
         </div>
       </section>
 
-      <hr className="divider" />
+      {/* <hr className="divider" /> */}
 
-      <section className="section">
+      {/* Recent */}
+      {/* <section className="section">
         <div className="section-header">
           <h2 className="section-title">Recent</h2>
 
@@ -946,11 +947,11 @@ export function App() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <hr className="divider" />
 
-      <section className="section">
+      {/* <section className="section">
         <h2 className="section-title">Quick Actions</h2>
 
         <div className="quick-actions">
@@ -958,7 +959,7 @@ export function App() {
             <ActionButton key={label} icon={icon} label={label} />
           ))}
         </div>
-      </section>
+      </section> */}
 
       <div className="component-input-container">
         <textarea
@@ -976,9 +977,11 @@ export function App() {
         />
 
         <div className="input-footer">
-          <button className="icon-btn-secondary" aria-label="Add">
+          {/* <button className="icon-btn-secondary" aria-label="Add">
             <Plus size={18} />
-          </button>
+          </button> */}
+
+          <div></div>
 
           <div className="input-footer-right">
             {!apiKey && (
@@ -1006,17 +1009,17 @@ export function App() {
   );
 }
 
-function ActionButton({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button className="action-btn">
-      <span className="action-icon">{icon}</span>
-      <span className="action-label">{label}</span>
-    </button>
-  );
-}
+// function ActionButton({
+//   icon,
+//   label,
+// }: {
+//   icon: React.ReactNode;
+//   label: string;
+// }) {
+//   return (
+//     <button className="action-btn">
+//       <span className="action-icon">{icon}</span>
+//       <span className="action-label">{label}</span>
+//     </button>
+//   );
+// }
