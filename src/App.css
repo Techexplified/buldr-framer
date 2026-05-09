@@ -588,7 +588,7 @@ body {
 }
 
 .key-input::placeholder {
-  color: var(--text-2);
+  color: var(--text-3);
 }
 
 .key-input:focus {
@@ -643,7 +643,10 @@ body {
 }
 
 .save-key-btn:disabled {
-  opacity: 0.35;
+  background: var(--accent);
+  border: none;
+  color: #000;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -653,7 +656,7 @@ body {
 
 .get-key-link {
   font-size: 9px;
-  color: var(--text-3);
+  color: var(--accent);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -662,7 +665,7 @@ body {
 }
 
 .get-key-link:hover {
-  color: var(--accent);
+  color: var(--text-3);
 }
 
 /* ── Generating Screen ── */

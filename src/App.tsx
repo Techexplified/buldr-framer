@@ -269,13 +269,20 @@ function ApiKeyScreen({
   currentKey: string;
   onClear: () => void;
 }) {
-  const [input, setInput] = useState(currentKey);
+  const [input, setInput] = useState("");
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!currentKey) {
+      setInput("");
+    }
+  }, [currentKey]);
 
   const handleSave = () => {
     if (!input.trim()) return;
 
     onSave(input.trim());
+    setInput("");
     setSaved(true);
 
     setTimeout(() => {
@@ -322,29 +329,33 @@ function ApiKeyScreen({
           </div>
         )}
 
-        <div className="key-input-wrap">
-          <input
-            className="key-input"
-            placeholder="sk-or-v1-..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSave()}
-          />
-        </div>
+        {!currentKey && (
+          <div className="key-input-wrap">
+            <input
+              className="key-input"
+              placeholder="sk-or-v1-..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+            />
+          </div>
+        )}
 
-        <button
-          className={`save-key-btn ${saved ? "saved" : ""}`}
-          onClick={handleSave}
-          disabled={!input.trim()}
-        >
-          {saved ? (
-            <>
-              <CheckCircle size={13} /> Saved
-            </>
-          ) : (
-            "Save Key"
-          )}
-        </button>
+        {!currentKey && (
+          <button
+            className={`save-key-btn ${saved ? "saved" : ""}`}
+            onClick={handleSave}
+            disabled={!input.trim()}
+          >
+            {saved ? (
+              <>
+                <CheckCircle size={13} /> Saved
+              </>
+            ) : (
+              "Save Key"
+            )}
+          </button>
+        )}
 
         <a
           href="https://openrouter.ai/keys"
