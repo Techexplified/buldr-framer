@@ -67,24 +67,28 @@ function useApiKey() {
 }
 
 const suggestionPrompts: Record<string, string> = {
-  "Word Flux":
-    "Create an animated text component with smooth word-cycling transitions, bold typography, and a glowing accent color.",
-  "Flow Tracker":
+  "Gradient Text":
+    "Create an text component with bluish gradient background, bold typography, and a glowing accent color.",
+
+  "Kanban Board":
     "Create a kanban-style flow tracker with drag-and-drop columns, status badges, and a minimal dark card layout.",
-  "Time Pulse":
+
+  "Countdown Timer":
     "Create a countdown timer component with a circular progress ring, large digit display, and pulsing animation when time is low.",
-  "Depth Tilt":
+
+  "3D Tilt Card":
     "Create a 3D tilt card component that responds to mouse movement with a parallax depth effect and subtle shadow.",
-  "Echo Wave":
+
+  "Audio Visualizer":
     "Create an animated audio waveform visualizer component with bar graph style bars that pulse rhythmically.",
 };
 
 const SUGGESTIONS = [
-  "Word Flux",
-  "Flow Tracker",
-  "Time Pulse",
-  "Depth Tilt",
-  "Echo Wave",
+  "Gradient Text",
+  "Kanban Board",
+  "Countdown Timer",
+  "3D Tilt Card",
+  "Audio Visualizer",
 ];
 
 const SYSTEM_PROMPT = `You are an expert Framer code component developer.
