@@ -675,7 +675,7 @@ function ResultScreen({
           </button>
         </div>
 
-        <div>
+        <div style={{ padding: "0 14px" }}>
           <button className="new-component-btn" onClick={onNew}>
             Generate another <ChevronRight size={12} />
           </button>
