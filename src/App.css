@@ -655,7 +655,7 @@ body {
 }
 
 .get-key-link {
-  font-size: 9px;
+  font-size: 14px;
   color: var(--accent);
   text-decoration: none;
   display: flex;
